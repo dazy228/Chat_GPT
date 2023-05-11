@@ -1,4 +1,3 @@
-from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.exceptions import NetworkError, TerminatedByOtherGetUpdates
 from aiogram import Bot, Dispatcher, executor, types
 from collections import deque
