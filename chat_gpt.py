@@ -1,6 +1,5 @@
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram import Bot, Dispatcher, executor
-from aiogram.utils.exceptions import NetworkError
+from aiogram.utils.exceptions import NetworkError, TerminatedByOtherGetUpdates
 from aiogram import Bot, Dispatcher, executor, types
 from collections import deque
 import openai
@@ -22,6 +21,7 @@ request_limit = 5
 MAX_DIALOG_HISTORY = 5
 time_window = 60
 
+
 async def rate_limiter(user_id):
     if user_id not in user_request_counter:
         user_request_counter[user_id] = {'count': 1, 'timer': asyncio.get_event_loop().create_task(reset_counter(user_id))}
@@ -31,9 +31,11 @@ async def rate_limiter(user_id):
         return False
     return True
 
+
 async def reset_counter(user_id):
     await asyncio.sleep(time_window)
     del user_request_counter[user_id]
+
 
 @dp.message_handler(commands=['start'])
 async def send_welcome(message: types.Message):
@@ -42,6 +44,7 @@ async def send_welcome(message: types.Message):
         user_dialogs[user_id] = []
 
     await message.reply(f"Привет {message.from_user.first_name}! Я умный бот. Чем могу вам помочь?")
+
 
 async def ai(prompt, user_id):
     # Историю диалога для каждого пользователя
@@ -62,6 +65,7 @@ async def ai(prompt, user_id):
     except Exception as e:
         logging.error(f"An unexpected error occurred: {e}")
         return None
+
 
 @dp.message_handler()
 async def echo(message: types.Message):
@@ -98,6 +102,7 @@ async def echo(message: types.Message):
         await message.reply(answer)
     else:
         await message.reply('😞  Неизвестная ошибка, попробуйте ещё раз.')
+
 
 async def main():
     while True:
